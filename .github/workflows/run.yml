@@ -28,6 +28,7 @@ jobs:
           echo "v2fly_youtube=https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/youtube" >> $GITHUB_ENV
           echo "v2fly_openai=https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/openai" >> $GITHUB_ENV
           echo "v2fly_notion=https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/notion" >> $GITHUB_ENV
+          echo "v2fly_telegram=https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/telegram" >> $GITHUB_ENV
           echo "cn_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/cn.txt" >> $GITHUB_ENV
           echo "lan_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/private.txt" >> $GITHUB_ENV
           echo "telegram_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/telegram.txt" >> $GITHUB_ENV
@@ -65,6 +66,12 @@ jobs:
           echo "payload:" > openai.txt
           curl -sSL ${v2fly_openai} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> openai.txt
           curl -sSL ${v2fly_openai} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> openai.txt
+      
+      - name: Generate telegram.txt file
+        run: |
+          echo "payload:" > telegram.txt
+          curl -sSL ${v2fly_telegram} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> telegram.txt
+          curl -sSL ${v2fly_telegram} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> telegram.txt
 
       - name: Generate notion.txt file
         run: |
