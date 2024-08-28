@@ -23,9 +23,11 @@ jobs:
           echo "Loyalsoldier_proxy=https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/proxy-list.txt" >> $GITHUB_ENV
           echo "Loyalsoldier_direct=https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/direct-list.txt" >> $GITHUB_ENV
           echo "Loyalsoldier_gfw=https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt" >> $GITHUB_ENV
-          echo "Loyalsoldier_greatfire=https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/greatfire.txt" >> $GITHUB_ENV
           echo "felixonmars_apple=https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/apple.china.conf" >> $GITHUB_ENV
           echo "felixonmars_google=https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/google.china.conf" >> $GITHUB_ENV
+          echo "v2fly_youtube=https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/youtube" >> $GITHUB_ENV
+          echo "v2fly_openai=https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/openai" >> $GITHUB_ENV
+          echo "v2fly_notion=https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/notion" >> $GITHUB_ENV
           echo "cn_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/cn.txt" >> $GITHUB_ENV
           echo "lan_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/private.txt" >> $GITHUB_ENV
           echo "telegram_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/telegram.txt" >> $GITHUB_ENV
@@ -50,6 +52,21 @@ jobs:
         run: |
           echo "payload:" > apple.txt
           curl -sSL ${felixonmars_apple} | perl -ne '/^server=\/([^\/]+)\// && print "  - |+.$1|\n"' | sed "s/|/'/g" >> apple.txt
+     
+      - name: Generate youtube.txt file
+        run: |
+          echo "payload:" > youtube.txt
+          curl -sSL ${v2fly_youtube} | grep -v "^#"|grep -v "^$" | awk "{printf \"  - '+.%s'\\n\", \$1}" >> youtube.txt
+          
+      - name: Generate openai.txt file
+        run: |
+          echo "payload:" > openai.txt
+          curl -sSL ${v2fly_openai} | grep -v "^#"|grep -v "^$" | awk "{printf \"  - '+.%s'\\n\", \$1}" >> openai.txt
+
+      - name: Generate notion.txt file
+        run: |
+          echo "payload:" > notion.txt
+          curl -sSL ${v2fly_notion} | grep -v "^#"|grep -v "^$" | awk "{printf \"  - '+.%s'\\n\", \$1}" >> notion.txt
 
       - name: Generate private.txt file
         run: |
@@ -78,11 +95,6 @@ jobs:
         run: |
           echo "payload:" > gfw.txt
           curl -sSL ${Loyalsoldier_gfw} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> gfw.txt
-
-      - name: Generate greatfire.txt file
-        run: |
-          echo "payload:" > greatfire.txt
-          curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> greatfire.txt
 
       - name: Generate tld-not-cn.txt file
         run: |
@@ -126,7 +138,7 @@ jobs:
           cd publish || exit 1
           git init
           git config --local user.name "github-actions[bot]"
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.email "89781271ack+github-actions[bot]@users.noreply.github.com"
           git checkout -b release
           git add .
           git commit -m "${{ env.RELEASE_NAME }}"
