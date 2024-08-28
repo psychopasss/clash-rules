@@ -56,17 +56,21 @@ jobs:
       - name: Generate youtube.txt file
         run: |
           echo "payload:" > youtube.txt
-          curl -sSL ${v2fly_youtube} | grep -v "^#"|grep -v "^$" | awk "{printf \"  - '+.%s'\\n\", \$1}" >> youtube.txt
+          curl -sSL ${v2fly_youtube} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> youtube.txt
+          curl -sSL ${v2fly_youtube} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> youtube.txt
+          # curl -sSL ${v2fly_youtube} | grep -v "^#"|grep -v "^$" | awk "{printf \"  - '+.%s'\\n\", \$1}" >> youtube.txt
           
       - name: Generate openai.txt file
         run: |
           echo "payload:" > openai.txt
-          curl -sSL ${v2fly_openai} | grep -v "^#"|grep -v "^$" | awk "{printf \"  - '+.%s'\\n\", \$1}" >> openai.txt
+          curl -sSL ${v2fly_openai} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> openai.txt
+          curl -sSL ${v2fly_openai} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> openai.txt
 
       - name: Generate notion.txt file
         run: |
           echo "payload:" > notion.txt
-          curl -sSL ${v2fly_notion} | grep -v "^#"|grep -v "^$" | awk "{printf \"  - '+.%s'\\n\", \$1}" >> notion.txt
+          curl -sSL ${v2fly_notion} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> notion.txt
+          curl -sSL ${v2fly_notion} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> notion.txt
 
       - name: Generate private.txt file
         run: |
